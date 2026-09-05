@@ -33,21 +33,31 @@ export default function NotificationCard({
         };
     }, []);
 
-    // Закрытие по Escape
-    if (notificationSettings.closeWithEscape) {
-        useEffect(() => {
-            const handleKeyDown = (event: KeyboardEvent) => {
-                if (event.key === "Escape") {
-                    event.preventDefault();
-                    onClose();
-                    return;
-                }
-            };
+    // Автоматическое закрытие по таймауту
+    useEffect(() => {
+        if (!notificationSettings.autoCloseMs) return;
 
-            document.addEventListener("keydown", handleKeyDown);
-            return () => document.removeEventListener("keydown", handleKeyDown);
-        }, [onClose]);
-    }
+        const timer = window.setTimeout(() => {
+            onClose();
+        }, notificationSettings.autoCloseMs);
+
+        return () => window.clearTimeout(timer);
+    }, [onClose]);
+
+    // Закрытие по Escape
+    useEffect(() => {
+        if (!notificationSettings.closeWithEscape) return
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key === "Escape") {
+                event.preventDefault();
+                onClose();
+                return;
+            }
+        };
+
+        document.addEventListener("keydown", handleKeyDown);
+        return () => document.removeEventListener("keydown", handleKeyDown);
+    }, [onClose]);
 
     return (
         <div
