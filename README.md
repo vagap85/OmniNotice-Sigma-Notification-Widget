@@ -2,11 +2,10 @@
 
 Виджет уведомлений для React. Показывает всплывающие уведомления с иконками, кнопками и плавными анимациями.
 
----
 
-## 📦 Установка
 
-```bash
+### 📦 Установка
+
 npm install
 🚀 Запуск
 bash
@@ -28,15 +27,15 @@ npm run test:coverage
 
 # Запустить тесты в режиме наблюдения (автоматический перезапуск)
 npm run test:watch
-📖 Как использовать
-1. Добавьте виджет в приложение
+## 📖Как использовать
+# 1. Добавьте виджет в приложение
 tsx
 import NotificationCardList from './NotificationWidget/NotificationCardList';
 
 function App() {
   return <NotificationCardList maxVisible={3} />;
 }
-2. Управляйте уведомлениями через ref
+# 2. Управляйте уведомлениями через ref
 tsx
 import { useRef } from 'react';
 import NotificationCardList from './NotificationWidget/NotificationCardList';
@@ -60,11 +59,11 @@ function App() {
     </>
   );
 }
-3. Методы, доступные через ref
-Метод	Описание
-add(notification)	Добавить уведомление
-remove(id)	Удалить уведомление по ID
-⚙️ Настройки
+# 3. Методы, доступные через ref
+Метод	Описание<br>
+add(notification)	Добавить уведомление<br>
+remove(id)	Удалить уведомление по ID<br>
+⚙️ Настройки<br>
 Создайте файл notification.config.ts:
 
 ts
@@ -72,30 +71,33 @@ export default {
   maxVisible: 3,          // Максимум видимых уведомлений
   removalAnimationMs: 300 // Длительность анимации удаления (мс)
 };
-🧩 Структура уведомления
+🧩 Структура уведомления<br>
 ts
 {
-  id?: string,               // Уникальный ID (генерируется автоматически)
-  title: string,             // Заголовок
-  description: string,       // Описание
-  buttonText: string,        // Текст на кнопке
-  Icon?: React.ReactNode,   // Иконка (опционально)
-  onClose?: () => void,     // Функция при закрытии
-  onClick?: () => void      // Функция при клике на кнопку
+  id?: string,               // Уникальный ID (генерируется автоматически)<br>
+  title: string,             // Заголовок<br>
+  description: string,       // Описание<br>
+  buttonText: string,        // Текст на кнопке<br>
+  Icon?: React.ReactNode,   // Иконка (опционально)<br>
+  onClose?: () => void,     // Функция при закрытии<br>
+  onClick?: () => void      // Функция при клике на кнопку<br>
 }
-🎯 Тесты, которые мы написали
-Компонент	Количество тестов	Что проверяем
-App	4	Рендеринг, добавление, счётчик, несколько уведомлений
-NotificationCardList	6	Добавление, удаление, ограничение по maxVisible, уникальные ID
-NotificationCard	7	Рендеринг, иконка, кнопка закрытия, ARIA-атрибуты
-Всего	18	✅ Все тесты проходят
-🐛 Что исправили в процессе
-Проблема	Решение
-SVG-атрибуты stroke-linecap	Заменили на strokeLinecap (React требует camelCase)
-Компонент возвращал null при пустом списке	Добавили проверку в тестах
-jest не был определён в ESM-режиме	Импортировали jest из @jest/globals
-Отсутствовал esModuleInterop в tsconfig.json	Добавили настройку
-🔧 Технологии
+🎯 Тесты<br>
+Компонент	Количество тестов	Что проверяем<br>
+App	4	Рендеринг, добавление, счётчик, несколько уведомлений<br>
+NotificationCardList	6	Добавление, удаление, ограничение по maxVisible, уникальные ID<br>
+NotificationCard	7	Рендеринг, иконка, кнопка закрытия, ARIA-атрибуты<br>
+Всего	18	✅ Все тесты проходят<br>
+# 🐛 Что исправили в процессе<br>
+SVG-атрибуты stroke-linecap	<br>
+Заменили на strokeLinecap (React требует camelCase)<br>
+Компонент возвращал null при пустом списке	
+Добавили проверку в тестах<br>
+jest не был определён в ESM-режиме	
+Импортировали jest из @jest/globals<br>
+Отсутствовал esModuleInterop в tsconfig.json	
+Добавили настройку<br>
+# 🔧 Технологии
 React 18
 
 TypeScript
@@ -113,7 +115,7 @@ File                                         | % Stmts | % Branch | % Funcs | % 
 ---------------------------------------------|---------|----------|---------|---------|
 All files                                    |   88.23 |    77.14 |   93.54 |   87.64 |
 ---------------------------------------------|---------|----------|---------|---------|
-🔨 Что можно улучшить в виджете
+### Что можно улучшить в виджете
 В процессе тестирования и анализа кода были выявлены следующие моменты, которые можно доработать:
 
 1. Добавить метод clear() для очистки всех уведомлений
@@ -121,12 +123,12 @@ All files                                    |   88.23 |    77.14 |   93.54 |   
 
 Сейчас:
 
-tsx
+
 // ❌ Такого метода нет
 listRef.current?.clear()
 Как исправить:
 
-tsx
+
 useImperativeHandle(ref, () => ({
   add: ...,
   remove: ...,
@@ -137,12 +139,12 @@ useImperativeHandle(ref, () => ({
 
 Сейчас:
 
-tsx
+
 // ❌ Все уведомления рендерятся, часть скрыта CSS
 {items.map((item) => <div key={item.id}>...</div>)}
 Как исправить:
 
-tsx
+
 // ✅ Рендерить только первые maxVisible уведомлений
 const visibleItems = items.slice(0, maxVisible);
 {visibleItems.map((item) => <div key={item.id}>...</div>)}
@@ -151,7 +153,7 @@ const visibleItems = items.slice(0, maxVisible);
 
 Как исправить:
 
-tsx
+
 <div 
   data-testid="notification-card-list"
   data-testid="notification-card" 
@@ -162,7 +164,7 @@ tsx
 
 Как исправить:
 
-tsx
+
 interface NotificationCardProps {
   onClick?: () => void; // ✅ Добавить
 }
@@ -176,7 +178,7 @@ interface NotificationCardProps {
 
 Как исправить:
 
-tsx
+
 // В NotificationCard
 useEffect(() => {
   if (duration) {
@@ -189,7 +191,7 @@ useEffect(() => {
 
 Как исправить:
 
-tsx
+
 try {
   // код
 } catch (error) {
@@ -201,7 +203,6 @@ try {
 
 Как исправить:
 
-tsx
 // ✅ Полный интерфейс
 interface NotificationCardProps {
   id?: string;
@@ -233,7 +234,6 @@ css
 
 Как исправить:
 
-tsx
 <NotificationCardList 
   maxVisible={3}
   className="my-custom-list"
@@ -256,14 +256,14 @@ jobs:
       - uses: actions/setup-node@v3
       - run: npm install
       - run: npm run test
-📊 Приоритеты для доработки
-Приоритет	Задача	Сложность
-🔴 Высокий	Добавить clear()	Лёгкая
-🔴 Высокий	Исправить maxVisible	Средняя
-🟡 Средний	Обработка клика на кнопку	Лёгкая
-🟡 Средний	Автоматическое скрытие по таймауту	Лёгкая
-🟢 Низкий	Добавить data-testid	Лёгкая
-🟢 Низкий	CI/CD на GitHub Actions	Средняя
+# 📊 Приоритеты для доработки
+Приоритет	Задача	Сложность<br>
+🔴 Высокий	Добавить clear()	Лёгкая<br>
+🔴 Высокий	Исправить maxVisible	Средняя<br>
+🟡 Средний	Обработка клика на кнопку	Лёгкая<br>
+🟡 Средний	Автоматическое скрытие по таймауту	Лёгкая<br>
+🟢 Низкий	Добавить data-testid	Лёгкая<br>
+🟢 Низкий	CI/CD на GitHub Actions	Средняя<br>
 
 📝 Лицензия
 MIT
