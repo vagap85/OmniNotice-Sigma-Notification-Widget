@@ -1,1 +1,273 @@
-# OmniNotice-Sigma-Notification-Widget
+# 🔔 OmniNotice — Sigma Notification Widget
+
+Виджет уведомлений для React. Показывает всплывающие уведомления с иконками, кнопками и плавными анимациями.
+
+---
+
+## 📦 Установка
+
+```bash
+npm install
+🚀 Запуск
+bash
+# Запустить проект в браузере
+npm run dev
+
+# Собрать проект
+npm run build
+
+# Посмотреть собранную версию
+npm run preview
+🧪 Тесты
+bash
+# Запустить все тесты
+npm run test
+
+# Запустить тесты с отчётом о покрытии
+npm run test:coverage
+
+# Запустить тесты в режиме наблюдения (автоматический перезапуск)
+npm run test:watch
+📖 Как использовать
+1. Добавьте виджет в приложение
+tsx
+import NotificationCardList from './NotificationWidget/NotificationCardList';
+
+function App() {
+  return <NotificationCardList maxVisible={3} />;
+}
+2. Управляйте уведомлениями через ref
+tsx
+import { useRef } from 'react';
+import NotificationCardList from './NotificationWidget/NotificationCardList';
+
+function App() {
+  const listRef = useRef(null);
+
+  const showNotification = () => {
+    listRef.current?.add({
+      title: 'Новое уведомление',
+      description: 'У вас есть новое сообщение',
+      buttonText: 'Посмотреть',
+      Icon: <BellIcon />,
+    });
+  };
+
+  return (
+    <>
+      <button onClick={showNotification}>Показать уведомление</button>
+      <NotificationCardList ref={listRef} maxVisible={3} />
+    </>
+  );
+}
+3. Методы, доступные через ref
+Метод	Описание
+add(notification)	Добавить уведомление
+remove(id)	Удалить уведомление по ID
+⚙️ Настройки
+Создайте файл notification.config.ts:
+
+ts
+export default {
+  maxVisible: 3,          // Максимум видимых уведомлений
+  removalAnimationMs: 300 // Длительность анимации удаления (мс)
+};
+🧩 Структура уведомления
+ts
+{
+  id?: string,               // Уникальный ID (генерируется автоматически)
+  title: string,             // Заголовок
+  description: string,       // Описание
+  buttonText: string,        // Текст на кнопке
+  Icon?: React.ReactNode,   // Иконка (опционально)
+  onClose?: () => void,     // Функция при закрытии
+  onClick?: () => void      // Функция при клике на кнопку
+}
+🎯 Тесты, которые мы написали
+Компонент	Количество тестов	Что проверяем
+App	4	Рендеринг, добавление, счётчик, несколько уведомлений
+NotificationCardList	6	Добавление, удаление, ограничение по maxVisible, уникальные ID
+NotificationCard	7	Рендеринг, иконка, кнопка закрытия, ARIA-атрибуты
+Всего	18	✅ Все тесты проходят
+🐛 Что исправили в процессе
+Проблема	Решение
+SVG-атрибуты stroke-linecap	Заменили на strokeLinecap (React требует camelCase)
+Компонент возвращал null при пустом списке	Добавили проверку в тестах
+jest не был определён в ESM-режиме	Импортировали jest из @jest/globals
+Отсутствовал esModuleInterop в tsconfig.json	Добавили настройку
+🔧 Технологии
+React 18
+
+TypeScript
+
+Vite
+
+Jest + Testing Library
+
+CSS-модули (FLIP-анимация)
+
+📊 Покрытие кода
+text
+---------------------------------------------|---------|----------|---------|---------|
+File                                         | % Stmts | % Branch | % Funcs | % Lines |
+---------------------------------------------|---------|----------|---------|---------|
+All files                                    |   88.23 |    77.14 |   93.54 |   87.64 |
+---------------------------------------------|---------|----------|---------|---------|
+🔨 Что можно улучшить в виджете
+В процессе тестирования и анализа кода были выявлены следующие моменты, которые можно доработать:
+
+1. Добавить метод clear() для очистки всех уведомлений
+Сейчас в NotificationCardList нет возможности очистить все уведомления одной командой.
+
+Сейчас:
+
+tsx
+// ❌ Такого метода нет
+listRef.current?.clear()
+Как исправить:
+
+tsx
+useImperativeHandle(ref, () => ({
+  add: ...,
+  remove: ...,
+  clear: () => setItems([]), // ✅ Добавить
+}), [removeItem]);
+2. Исправить логику maxVisible
+По задумке должно показываться только maxVisible уведомлений, но сейчас в DOM попадают все, а скрываются только стилями.
+
+Сейчас:
+
+tsx
+// ❌ Все уведомления рендерятся, часть скрыта CSS
+{items.map((item) => <div key={item.id}>...</div>)}
+Как исправить:
+
+tsx
+// ✅ Рендерить только первые maxVisible уведомлений
+const visibleItems = items.slice(0, maxVisible);
+{visibleItems.map((item) => <div key={item.id}>...</div>)}
+3. Добавить data-testid для упрощения тестирования
+Сейчас для тестов приходится искать элементы по классам или тексту, что делает тесты хрупкими.
+
+Как исправить:
+
+tsx
+<div 
+  data-testid="notification-card-list"
+  data-testid="notification-card" 
+  data-testid="close-button"
+>
+4. Добавить обработку клика на кнопку уведомления
+Сейчас есть buttonText, но нет обработчика клика на эту кнопку (кроме onClose).
+
+Как исправить:
+
+tsx
+interface NotificationCardProps {
+  onClick?: () => void; // ✅ Добавить
+}
+
+// В компоненте
+<button onClick={onClick}>
+  {buttonText}
+</button>
+5. Добавить автоматическое скрытие по таймауту
+В конфиге есть duration, но он не используется.
+
+Как исправить:
+
+tsx
+// В NotificationCard
+useEffect(() => {
+  if (duration) {
+    const timer = setTimeout(() => onClose?.(), duration);
+    return () => clearTimeout(timer);
+  }
+}, [duration, onClose]);
+6. Улучшить обработку ошибок
+Сейчас при ошибке в add() или remove() пользователь ничего не увидит.
+
+Как исправить:
+
+tsx
+try {
+  // код
+} catch (error) {
+  console.error('Ошибка при добавлении уведомления:', error);
+  // Показать fallback-уведомление
+}
+7. Добавить типы для всех пропсов
+Некоторые пропсы в NotificationCard не имеют явных типов.
+
+Как исправить:
+
+tsx
+// ✅ Полный интерфейс
+interface NotificationCardProps {
+  id?: string;
+  title: string;
+  description: string;
+  buttonText: string;
+  Icon?: React.ReactNode;
+  onClose?: () => void;
+  onClick?: () => void;
+  duration?: number;
+  className?: string;
+}
+8. Улучшить анимации
+FLIP-анимация работает, но можно сделать появление новых уведомлений с keyframe-анимацией.
+
+Как исправить:
+
+css
+.notification-card-list__item--entering {
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+9. Добавить поддержку кастомизации через пропсы
+Сейчас стили жёстко зашиты в CSS-файлах.
+
+Как исправить:
+
+tsx
+<NotificationCardList 
+  maxVisible={3}
+  className="my-custom-list"
+  itemClassName="my-custom-item"
+/>
+10. Настроить автоматическое тестирование в CI/CD
+Сейчас тесты запускаются только вручную.
+
+Как исправить:
+Добавить .github/workflows/test.yml:
+
+yaml
+name: Tests
+on: push
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+      - run: npm install
+      - run: npm run test
+📊 Приоритеты для доработки
+Приоритет	Задача	Сложность
+🔴 Высокий	Добавить clear()	Лёгкая
+🔴 Высокий	Исправить maxVisible	Средняя
+🟡 Средний	Обработка клика на кнопку	Лёгкая
+🟡 Средний	Автоматическое скрытие по таймауту	Лёгкая
+🟢 Низкий	Добавить data-testid	Лёгкая
+🟢 Низкий	CI/CD на GitHub Actions	Средняя
+
+📝 Лицензия
+MIT
+
+👤 Автор
+Разработчик: Davyd Ordynskiy
+Тестировщик: Evgeny Agapov
