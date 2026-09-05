@@ -197,4 +197,38 @@ describe('NotificationCardList', () => {
     const descriptions = screen.getAllByText(/Описание \d/);
     expect(descriptions).toHaveLength(2);
   });
+test('уведомление автоматически закрывается через заданное время', async () => {
+  const user = userEvent.setup();
+  const autoCloseDelay = 3000; // 3 секунды (из notification.config.ts)
+
+  function TestWrapper() {
+    const listRef = useRef<NotificationCardListHandle>(null);
+
+    return (
+      <div>
+        <button
+          onClick={() => listRef.current?.add({
+            title: 'Авто-уведомление',
+            description: 'Исчезнет через 3 секунды',
+            buttonText: 'OK',
+            Icon: <span>🔔</span>,
+          })}
+        >
+          Добавить
+        </button>
+        <NotificationCardList ref={listRef} maxVisible={3} />
+      </div>
+    );
+  }
+
+  render(<TestWrapper />);
+
+  await user.click(screen.getByText('Добавить'));
+  expect(screen.getByText('Авто-уведомление')).toBeInTheDocument();
+
+  // Ждём, пока оно исчезнет (даём запас в 500 мс)
+  await waitFor(() => {
+    expect(screen.queryByText('Авто-уведомление')).not.toBeInTheDocument();
+  }, { timeout: autoCloseDelay + 500 });
+});
 });
