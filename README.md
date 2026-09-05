@@ -1,0 +1,1 @@
+# OmniNotice-Sigma-Notification-Widget
