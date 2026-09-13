@@ -142,7 +142,7 @@ simple.test.tsx	1	Проверка тестового окружения<br>
 
 ## 🍒Заглушка «Вишенки» (задача 2.6) 9 тестов
 ### Все тесты — в файле `src/__tests__/Vishenka.test.tsx`.
-# Результаты - [[https://yadi.sk/d/2RM8QBz76TWf-g](url)](https://disk.yandex.ru/i/YiK7TmdGm3eV7Q)](url)
+# Результаты - https://disk.yandex.ru/i/YiK7TmdGm3eV7Q
  
 
 | # | Тест | Что проверяет | Зачем |<br>
